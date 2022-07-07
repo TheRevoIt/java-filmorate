@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 @Slf4j
-abstract class InMemoryController<T extends Model> {
+public abstract class InMemoryController<T extends Model> {
     private final Map<Long, T> list = new HashMap<>();
     private Long id = 1L;
 
