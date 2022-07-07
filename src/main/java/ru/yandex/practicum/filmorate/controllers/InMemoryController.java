@@ -10,19 +10,20 @@ import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.model.Model;
 
 import javax.validation.Valid;
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
-public abstract class InMemoryController<T extends Model> {
-    private final Map<Integer, T> list = new HashMap<>();
-    private int id = 1;
+abstract class InMemoryController<T extends Model> {
+    private final Map<Long, T> list = new HashMap<>();
+    private Long id = 1L;
 
     @GetMapping()
-    public Collection<T> getItems() {
+    public List<T> getItems() {
         log.info("Список получен");
-        return list.values();
+        return new ArrayList<>(list.values());
     }
 
     @PostMapping()
