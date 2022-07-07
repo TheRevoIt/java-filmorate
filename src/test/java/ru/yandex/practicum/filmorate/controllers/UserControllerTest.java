@@ -20,7 +20,7 @@ import java.util.Objects;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@WebMvcTest(controllers = InMemoryController.class)
+@WebMvcTest(controllers = UserController.class)
 class UserControllerTest {
 
     private static final Gson gson = new GsonBuilder()
