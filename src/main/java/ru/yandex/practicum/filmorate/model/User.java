@@ -1,5 +1,7 @@
 package ru.yandex.practicum.filmorate.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import ru.yandex.practicum.filmorate.validators.NoWhiteSpaces;
@@ -9,7 +11,9 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PastOrPresent;
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 @Slf4j
 @Data
@@ -25,8 +29,13 @@ public class User implements Model {
     @NotNull
     @PastOrPresent
     private LocalDate birthday;
+    private Set<Long> friendIds;
 
-    public User(String email, String login, String name, LocalDate birthday) {
+    @JsonCreator
+    public User(@JsonProperty("email") String email,
+                @JsonProperty("login") String login,
+                @JsonProperty("name") String name,
+                @JsonProperty("birthday") LocalDate birthday) {
         this.email = email;
         this.login = login;
         if (Objects.isNull(name) || name.isBlank()) {
@@ -35,6 +44,7 @@ public class User implements Model {
             this.name = name;
         }
         this.birthday = birthday;
+        this.friendIds = new HashSet<>();
     }
 
     @Override
