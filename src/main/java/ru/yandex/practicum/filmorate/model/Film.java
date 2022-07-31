@@ -37,7 +37,7 @@ public class Film implements Model {
     public Film(@JsonProperty("name") String name,
                 @JsonProperty("description") String description,
                 @JsonProperty("releaseDate") LocalDate releaseDate,
-                @JsonProperty("birthday") Integer duration) {
+                @JsonProperty("duration") Integer duration) {
         this.name = name;
         this.description = description;
         this.releaseDate = releaseDate;
