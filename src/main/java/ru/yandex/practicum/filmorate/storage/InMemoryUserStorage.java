@@ -10,21 +10,20 @@ import java.util.Objects;
 
 @Component
 public class InMemoryUserStorage implements UserStorage {
-    Long id = 1L;
-    HashMap<Long, User> usersMap = new HashMap<>();
+    private final HashMap<Long, User> usersMap = new HashMap<>();
+    private Long id = 1L;
 
     public List<User> getAllEntries() {
-        return new ArrayList<User>(usersMap.values());
+        return new ArrayList<>(usersMap.values());
     }
 
     public User get(Long id) {
         return usersMap.get(id);
     }
 
-    public User save(User user) {
+    public void save(User user) {
         user.setId(id++);
         usersMap.put(user.getId(), user);
-        return user;
     }
 
     public User update(User user) {
@@ -33,5 +32,10 @@ public class InMemoryUserStorage implements UserStorage {
         }
         usersMap.replace(user.getId(), user);
         return user;
+    }
+
+    public void clear() {
+        this.id = 1L;
+        usersMap.clear();
     }
 }

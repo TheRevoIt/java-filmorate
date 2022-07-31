@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import ru.yandex.practicum.filmorate.validators.NoWhiteSpaces;
@@ -17,7 +18,9 @@ import java.util.Set;
 
 @Slf4j
 @Data
+@JsonPropertyOrder({"id", "email", "login", "name", "birthday", "friendIds"})
 public class User implements Model {
+    @JsonProperty
     private Long id;
     @NotNull
     @Email
@@ -29,6 +32,7 @@ public class User implements Model {
     @NotNull
     @PastOrPresent
     private LocalDate birthday;
+    @JsonProperty
     private Set<Long> friendIds;
 
     @JsonCreator

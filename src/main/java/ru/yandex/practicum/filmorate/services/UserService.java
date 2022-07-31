@@ -112,4 +112,8 @@ public class UserService {
                     .collect(Collectors.toList());
         }
     }
+
+    public void clearMapForTests() {
+        userStorage.clear();
+    }
 }

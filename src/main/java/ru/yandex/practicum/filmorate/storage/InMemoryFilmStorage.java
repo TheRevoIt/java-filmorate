@@ -10,21 +10,20 @@ import java.util.Objects;
 
 @Component
 public class InMemoryFilmStorage implements FilmStorage {
-    Long id = 1L;
-    HashMap<Long, Film> filmsMap = new HashMap<>();
+    private final HashMap<Long, Film> filmsMap = new HashMap<>();
+    private Long id = 1L;
 
     public List<Film> getAllEntries() {
-        return new ArrayList<Film>(filmsMap.values());
+        return new ArrayList<>(filmsMap.values());
     }
 
     public Film get(Long id) {
         return filmsMap.get(id);
     }
 
-    public Film save(Film film) {
+    public void save(Film film) {
         film.setId(id++);
         filmsMap.put(film.getId(), film);
-        return film;
     }
 
     public Film update(Film film) {
@@ -33,5 +32,10 @@ public class InMemoryFilmStorage implements FilmStorage {
         }
         filmsMap.replace(film.getId(), film);
         return film;
+    }
+
+    public void clear() {
+        this.id = 1L;
+        filmsMap.clear();
     }
 }
