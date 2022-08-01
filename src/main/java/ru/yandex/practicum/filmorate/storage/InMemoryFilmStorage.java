@@ -7,35 +7,36 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Component
 public class InMemoryFilmStorage implements FilmStorage {
-    private final HashMap<Long, Film> filmsMap = new HashMap<>();
+    private final HashMap<Long, Film> films = new HashMap<>();
     private Long id = 1L;
 
     public List<Film> getAllEntries() {
-        return new ArrayList<>(filmsMap.values());
+        return new ArrayList<>(films.values());
     }
 
-    public Film get(Long id) {
-        return filmsMap.get(id);
+    public Optional<Film> get(Long id) {
+        return Optional.ofNullable(films.get(id));
     }
 
     public void save(Film film) {
         film.setId(id++);
-        filmsMap.put(film.getId(), film);
+        films.put(film.getId(), film);
     }
 
     public Film update(Film film) {
-        if (Objects.isNull(filmsMap.get(film.getId()))) {
+        if (Objects.isNull(films.get(film.getId()))) {
             return null;
         }
-        filmsMap.replace(film.getId(), film);
+        films.replace(film.getId(), film);
         return film;
     }
 
     public void clear() {
         this.id = 1L;
-        filmsMap.clear();
+        films.clear();
     }
 }

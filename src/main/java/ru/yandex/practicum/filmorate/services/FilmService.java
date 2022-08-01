@@ -27,16 +27,11 @@ public class FilmService {
     }
 
     public Film getFilm(Long filmId) {
-        Film loadFilm = filmStorage.get(filmId);
-        if (Objects.isNull(loadFilm)) {
-            throw new NotFoundException(String.format("Фильм с id=%x " +
-                    "не найден", filmId));
-        }
-        return filmStorage.get(filmId);
+        return filmStorage.get(filmId).orElseThrow(() -> new NotFoundException(String.format("Фильм с id=%x " +
+                "не найден", filmId)));
     }
 
     public Film saveFilm(Film film) {
-        Film filmLoad = filmStorage.get(film.getId());
         filmStorage.save(film);
         return film;
     }
@@ -51,36 +46,26 @@ public class FilmService {
         }
     }
 
+    @SuppressWarnings("OptionalGetWithoutIsPresent")
     public void likeFilm(Long id, Long userId) {
-        Film filmLoaded = filmStorage.get(id);
-        User userLoaded = userStorage.get(userId);
-        if (Objects.isNull(filmLoaded)) {
-            throw new NotFoundException(String.format("Фильм с id=%x " +
-                    "не найден", id));
-        } else if (Objects.isNull(userLoaded)) {
-            throw new NotFoundException(String.format("Пользователь с id=%x " +
-                    "не найден", userId));
-        } else {
-            Set<Long> filmLikesSet = filmLoaded.getLikesIds();
-            filmLikesSet.add(userId);
-            filmStorage.get(id).setLikesIds(filmLikesSet);
-        }
+        Film filmLoaded = filmStorage.get(id).orElseThrow(() -> new NotFoundException(String.format("Фильм с id=%x " +
+                "не найден", id)));
+        User userLoaded = userStorage.get(userId).orElseThrow(() -> new NotFoundException(String.format("Пользователь" +
+                " с id=%x не найден", userId)));
+        Set<Long> filmLikesSet = filmLoaded.getLikesIds();
+        filmLikesSet.add(userId);
+        filmStorage.get(id).get().setLikesIds(filmLikesSet);
     }
 
+    @SuppressWarnings("OptionalGetWithoutIsPresent")
     public void deleteLike(Long id, Long userId) {
-        Film filmLoaded = filmStorage.get(id);
-        User userLoaded = userStorage.get(userId);
-        if (Objects.isNull(filmLoaded)) {
-            throw new NotFoundException(String.format("Фильм с id=%x " +
-                    "не найден", id));
-        } else if (Objects.isNull(userLoaded)) {
-            throw new NotFoundException(String.format("Пользователь с id=%x " +
-                    "не найден", userId));
-        } else {
-            Set<Long> filmLikesSet = filmLoaded.getLikesIds();
-            filmLikesSet.remove(userId);
-            filmStorage.get(id).setLikesIds(filmLikesSet);
-        }
+        Film filmLoaded = filmStorage.get(id).orElseThrow(() -> new NotFoundException(String.format("Фильм с id=%x " +
+                "не найден", id)));
+        User userLoaded = userStorage.get(userId).orElseThrow(() -> new NotFoundException(String.format("Пользователь" +
+                " с id=%x не найден", userId)));
+        Set<Long> filmLikesSet = filmLoaded.getLikesIds();
+        filmLikesSet.remove(userId);
+        filmStorage.get(id).get().setLikesIds(filmLikesSet);
     }
 
     public List<Film> getFilmsSortedByLikes(Integer size) {

@@ -7,35 +7,36 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Component
 public class InMemoryUserStorage implements UserStorage {
-    private final HashMap<Long, User> usersMap = new HashMap<>();
+    private final HashMap<Long, User> users = new HashMap<>();
     private Long id = 1L;
 
     public List<User> getAllEntries() {
-        return new ArrayList<>(usersMap.values());
+        return new ArrayList<>(users.values());
     }
 
-    public User get(Long id) {
-        return usersMap.get(id);
+    public Optional<User> get(Long id) {
+        return Optional.ofNullable(users.get(id));
     }
 
     public void save(User user) {
         user.setId(id++);
-        usersMap.put(user.getId(), user);
+        users.put(user.getId(), user);
     }
 
     public User update(User user) {
-        if (Objects.isNull(usersMap.get(user.getId()))) {
+        if (Objects.isNull(users.get(user.getId()))) {
             return null;
         }
-        usersMap.replace(user.getId(), user);
+        users.replace(user.getId(), user);
         return user;
     }
 
     public void clear() {
         this.id = 1L;
-        usersMap.clear();
+        users.clear();
     }
 }
