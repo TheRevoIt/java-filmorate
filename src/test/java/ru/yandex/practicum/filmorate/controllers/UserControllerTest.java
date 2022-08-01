@@ -252,7 +252,7 @@ class UserControllerTest {
                         .content(""))
                 .andExpect(MockMvcResultMatchers.status().is4xxClientError()).andReturn();
         String received = response.getResponse().getContentAsString(StandardCharsets.UTF_8);
-        String expected = "{\"message\":\"Пользователь с id=5 не найден\"}";
+        String expected = "Пользователь с id=5 не найден";
         assertEquals(expected, received, "Получение пользователя по id происходит некорректно");
     }
 
@@ -318,7 +318,7 @@ class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(""))
                 .andExpect(MockMvcResultMatchers.status().is4xxClientError()).andReturn();
-        String expected = "{\"message\":\"Пользователь с id=2 не найден\"}";
+        String expected = "Пользователь с id=2 не найден";
         assertEquals(expected, response.getResponse().getContentAsString(StandardCharsets.UTF_8), "Добавление в друзья проходит некорректно");
     }
 
