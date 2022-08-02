@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
@@ -46,26 +45,20 @@ public class FilmService {
         }
     }
 
-    @SuppressWarnings("OptionalGetWithoutIsPresent")
     public void likeFilm(Long id, Long userId) {
-        Film filmLoaded = filmStorage.get(id).orElseThrow(() -> new NotFoundException(String.format("Фильм с id=%x " +
-                "не найден", id)));
-        User userLoaded = userStorage.get(userId).orElseThrow(() -> new NotFoundException(String.format("Пользователь" +
+        Film filmLoaded = getFilm(id);
+        userStorage.get(userId).orElseThrow(() -> new NotFoundException(String.format("Пользователь" +
                 " с id=%x не найден", userId)));
         Set<Long> filmLikesSet = filmLoaded.getLikesIds();
         filmLikesSet.add(userId);
-        filmStorage.get(id).get().setLikesIds(filmLikesSet);
     }
 
-    @SuppressWarnings("OptionalGetWithoutIsPresent")
     public void deleteLike(Long id, Long userId) {
-        Film filmLoaded = filmStorage.get(id).orElseThrow(() -> new NotFoundException(String.format("Фильм с id=%x " +
-                "не найден", id)));
-        User userLoaded = userStorage.get(userId).orElseThrow(() -> new NotFoundException(String.format("Пользователь" +
+        Film filmLoaded = getFilm(id);
+        userStorage.get(userId).orElseThrow(() -> new NotFoundException(String.format("Пользователь" +
                 " с id=%x не найден", userId)));
         Set<Long> filmLikesSet = filmLoaded.getLikesIds();
         filmLikesSet.remove(userId);
-        filmStorage.get(id).get().setLikesIds(filmLikesSet);
     }
 
     public List<Film> getFilmsSortedByLikes(Integer size) {

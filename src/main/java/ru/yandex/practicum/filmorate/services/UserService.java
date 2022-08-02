@@ -41,53 +41,41 @@ public class UserService {
                 " не найден", user.getId()));
     }
 
-    @SuppressWarnings("OptionalGetWithoutIsPresent")
     public void addFriends(Long userId, Long friendId) {
-        User userLoaded = userStorage.get(userId).orElseThrow(() -> new NotFoundException(String.format("Пользователь" +
-                " с id=%x не найден", userId)));
+        User userLoaded = getUser(userId);
         User friendLoaded = userStorage.get(friendId).orElseThrow(() -> new NotFoundException(String.format("Пользователь" +
                 " с id=%x не найден", friendId)));
         Set<Long> userFriendSet = userLoaded.getFriendIds();
         userFriendSet.add(friendId);
-        userStorage.get(userId).get().setFriendIds(userFriendSet);
         Set<Long> friendFriendSet = friendLoaded.getFriendIds();
         friendFriendSet.add(userId);
-        userStorage.get(friendId).get().setFriendIds(friendFriendSet);
     }
 
-    @SuppressWarnings("OptionalGetWithoutIsPresent")
     public void deleteFriend(Long userId, Long friendId) {
-        User userLoaded = userStorage.get(userId).orElseThrow(() -> new NotFoundException(String.format("Пользователь" +
-                " с id=%x не найден", userId)));
+        User userLoaded = getUser(userId);
         User friendLoaded = userStorage.get(friendId).orElseThrow(() -> new NotFoundException(String.format("Пользователь" +
                 " с id=%x не найден", friendId)));
-        Set<Long> userFriendSet = userLoaded.getFriendIds();
-        userFriendSet.remove(friendId);
-        userStorage.get(userId).get().setFriendIds(userFriendSet);
-        Set<Long> friendFriendsSet = friendLoaded.getFriendIds();
-        userFriendSet.remove(friendId);
-        userStorage.get(userId).get().setFriendIds(userFriendSet);
+        Set<Long> userFriends= userLoaded.getFriendIds();
+        userFriends.remove(friendId);
+        Set<Long> friendFriends = friendLoaded.getFriendIds();
+        friendFriends.remove(friendId);
     }
 
-    @SuppressWarnings("OptionalGetWithoutIsPresent")
     public List<User> getFriendList(Long userId) {
-        User userLoaded = userStorage.get(userId).orElseThrow(() -> new NotFoundException(String.format("Пользователь" +
-                " с id=%x не найден", userId)));
+        User userLoaded = getUser(userId);
         return userLoaded.getFriendIds().stream()
-                .map(id -> userStorage.get(id).get())
+                .map(this::getUser)
                 .collect(Collectors.toList());
     }
 
-    @SuppressWarnings("OptionalGetWithoutIsPresent")
     public List<User> getCommonFriends(Long userId, Long friendId) {
-        User userLoaded = userStorage.get(userId).orElseThrow(() -> new NotFoundException(String.format("Пользователь" +
-                " с id=%x не найден", userId)));
+        User userLoaded = getUser(userId);
         User friendLoaded = userStorage.get(friendId).orElseThrow(() -> new NotFoundException(String.format("Пользователь" +
                 " с id=%x не найден", friendId)));
         Set<Long> userFriendsSet = new HashSet<>(userLoaded.getFriendIds());
         userFriendsSet.retainAll(friendLoaded.getFriendIds());
         return userFriendsSet.stream()
-                .map(id -> userStorage.get(id).get())
+                .map(this::getUser)
                 .collect(Collectors.toList());
     }
 
