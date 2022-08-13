@@ -12,13 +12,11 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PastOrPresent;
 import java.time.LocalDate;
-import java.util.HashSet;
 import java.util.Objects;
-import java.util.Set;
 
 @Slf4j
 @Data
-@JsonPropertyOrder({"id", "email", "login", "name", "birthday", "friendIds"})
+@JsonPropertyOrder({"id", "email", "login", "name", "birthday"})
 public class User implements Model {
     @JsonProperty
     private Long id;
@@ -32,8 +30,6 @@ public class User implements Model {
     @NotNull
     @PastOrPresent
     private LocalDate birthday;
-    @JsonProperty
-    private Set<Long> friendIds;
 
     @JsonCreator
     public User(@JsonProperty("email") String email,
@@ -48,7 +44,22 @@ public class User implements Model {
             this.name = name;
         }
         this.birthday = birthday;
-        this.friendIds = new HashSet<>();
+    }
+
+    public User(String email,
+                String login,
+                String name,
+                LocalDate birthday,
+                Long id) {
+        this.email = email;
+        this.login = login;
+        if (Objects.isNull(name) || name.isBlank()) {
+            this.name = login;
+        } else {
+            this.name = name;
+        }
+        this.birthday = birthday;
+        this.id = id;
     }
 
     @Override
