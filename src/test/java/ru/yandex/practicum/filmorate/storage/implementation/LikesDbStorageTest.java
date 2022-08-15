@@ -55,7 +55,7 @@ class LikesDbStorageTest {
         userStorage.save(user);
         Like like = new Like(1L, 1L);
         likesStorage.likeFilm(like);
-        assertEquals(1L, likesStorage.getFilmsSortedByLikes(10).get(0), "Некорреткно обрабатывается лайк пользователем фильма");
+        assertEquals(1L, likesStorage.getFilmsSortedByLikes(10).get(0).getId(), "Некорреткно обрабатывается лайк пользователем фильма");
     }
 
     @Test
@@ -79,8 +79,8 @@ class LikesDbStorageTest {
         likesStorage.likeFilm(like);
         likesStorage.likeFilm(like1);
         likesStorage.likeFilm(like2);
-        assertEquals(1L, likesStorage.getFilmsSortedByLikes(10).get(0));
-        assertEquals(2L, likesStorage.getFilmsSortedByLikes(10).get(1));
+        assertEquals(1L, likesStorage.getFilmsSortedByLikes(10).get(0).getId());
+        assertEquals(2L, likesStorage.getFilmsSortedByLikes(10).get(1).getId());
     }
 
     @Test
@@ -98,8 +98,8 @@ class LikesDbStorageTest {
         Like like2 = new Like(1L, 2L);
         likesStorage.likeFilm(like);
         likesStorage.likeFilm(like2);
-        assertEquals(1, likesStorage.getFilmsSortedByLikes(10).get(0));
+        assertEquals(1, likesStorage.getFilmsSortedByLikes(10).get(0).getId());
         likesStorage.deleteLike(like);
-        assertEquals(2, likesStorage.getFilmsSortedByLikes(10).get(0));
+        assertEquals(2, likesStorage.getFilmsSortedByLikes(10).get(0).getId());
     }
 }

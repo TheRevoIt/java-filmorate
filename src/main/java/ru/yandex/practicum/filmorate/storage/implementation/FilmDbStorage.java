@@ -27,10 +27,21 @@ public class FilmDbStorage implements FilmStorage {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    static Film mapRowToFilm(ResultSet resultSet, int rowNum) throws SQLException {
+        Film filmMapped = new Film(resultSet.getString("title"),
+                resultSet.getString("description"),
+                resultSet.getDate("release_date").toLocalDate(),
+                resultSet.getInt("duration"),
+                new Mpa(resultSet.getLong("MPA.MPA_ID"),
+                        resultSet.getString("MPA.NAME")));
+        filmMapped.setId(resultSet.getLong("film_id"));
+        return filmMapped;
+    }
+
     @Override
     public List<Film> getAllEntries() {
         String sqlQuery = "SELECT * FROM FILMS JOIN MPA on FILMS.MPA_ID = MPA.MPA_ID";
-        return jdbcTemplate.query(sqlQuery, this::mapRowToFilm);
+        return jdbcTemplate.query(sqlQuery, FilmDbStorage::mapRowToFilm);
     }
 
     @Override
@@ -38,7 +49,7 @@ public class FilmDbStorage implements FilmStorage {
         String sqlQuery = "SELECT FILM_ID, TITLE, DESCRIPTION, RELEASE_DATE, DURATION, MPA.MPA_ID, NAME FROM FILMS JOIN MPA" +
                 " on FILMS.MPA_ID = MPA.MPA_ID WHERE FILM_ID = ?";
         try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(sqlQuery, this::mapRowToFilm, id));
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sqlQuery, FilmDbStorage::mapRowToFilm, id));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
@@ -63,15 +74,7 @@ public class FilmDbStorage implements FilmStorage {
             return stmt;
         }, keyHolder);
         film.setId(Objects.requireNonNull(keyHolder.getKey()).longValue());
-        if (Objects.nonNull(film.getGenres())) {
-            String sqlQueryGenre = "INSERT INTO FILM_GENRES (FILM_ID, GENRE_ID) VALUES (?, ?)";
-            film.getGenres().forEach(p -> jdbcTemplate.update(connection -> {
-                PreparedStatement statement = connection.prepareStatement(sqlQueryGenre);
-                statement.setLong(1, film.getId());
-                statement.setLong(2, p.getId());
-                return statement;
-            }));
-        }
+        addFilmGenres(film);
     }
 
     @Override
@@ -86,17 +89,8 @@ public class FilmDbStorage implements FilmStorage {
                 , film.getDuration()
                 , film.getMpa().getId()
                 , film.getId());
-        String sqlQueryDelete = "DELETE FROM FILM_GENRES";
-        jdbcTemplate.update(sqlQueryDelete);
-        if (Objects.nonNull(film.getGenres())) {
-            String sqlQueryGenre = "MERGE INTO FILM_GENRES (FILM_ID, GENRE_ID) VALUES (?, ?)";
-            film.getGenres().forEach(p -> jdbcTemplate.update(connection -> {
-                PreparedStatement statement = connection.prepareStatement(sqlQueryGenre);
-                statement.setLong(1, film.getId());
-                statement.setLong(2, p.getId());
-                return statement;
-            }));
-        }
+        deleteFilmGenres(film);
+        addFilmGenres(film);
         if (res > 0) {
             return film;
         }
@@ -119,14 +113,20 @@ public class FilmDbStorage implements FilmStorage {
         jdbcTemplate.update(sqlQueryId);
     }
 
-    private Film mapRowToFilm(ResultSet resultSet, int rowNum) throws SQLException {
-        Film filmMapped = new Film(resultSet.getString("title"),
-                resultSet.getString("description"),
-                resultSet.getDate("release_date").toLocalDate(),
-                resultSet.getInt("duration"),
-                new Mpa(resultSet.getLong("MPA.MPA_ID"),
-                        resultSet.getString("MPA.NAME")));
-        filmMapped.setId(resultSet.getLong("film_id"));
-        return filmMapped;
+    private void addFilmGenres(Film film) {
+        if (Objects.nonNull(film.getGenres())) {
+            String sqlQueryGenre = "MERGE INTO FILM_GENRES (FILM_ID, GENRE_ID) VALUES (?, ?)";
+            film.getGenres().forEach(p -> jdbcTemplate.update(connection -> {
+                PreparedStatement statement = connection.prepareStatement(sqlQueryGenre);
+                statement.setLong(1, film.getId());
+                statement.setLong(2, p.getId());
+                return statement;
+            }));
+        }
+    }
+
+    private void deleteFilmGenres(Film film) {
+        String sqlQueryDelete = "DELETE FROM FILM_GENRES";
+        jdbcTemplate.update(sqlQueryDelete);
     }
 }

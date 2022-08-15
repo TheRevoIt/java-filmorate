@@ -2,13 +2,13 @@ package ru.yandex.practicum.filmorate.model;
 
 import lombok.Data;
 
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotBlank;
 import java.util.Objects;
 
 @Data
 public class Genre {
     private final long id;
-    @NotNull
+    @NotBlank
     private final String name;
 
     @Override

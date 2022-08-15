@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.storage.implementation;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.Friendship;
+import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.FriendsStorage;
 
 import java.util.List;
@@ -28,19 +29,17 @@ public class FriendsDbStorage implements FriendsStorage {
     }
 
     @Override
-    public List<Long> getFriendList(Long userId) {
-        String sqlQuery = "SELECT FRIEND_ID FROM FRIENDS WHERE USER_ID = ?";
-        return jdbcTemplate.queryForList(sqlQuery, Long.class, userId);
+    public List<User> getFriendList(Long userId) {
+        String sqlQuery = "SELECT * FROM USERS where Users.USER_ID " +
+                "in (SELECT FRIEND_ID from FRIENDS where FRIENDS.USER_ID = ?)";
+        return jdbcTemplate.query(sqlQuery, UserDbStorage::mapRowToUser, userId);
     }
 
     @Override
-    public List<Long> getCommonFriends(Friendship friendship) {
-        String sqlQuery = "SELECT FirstUserFriends.id FROM (SELECT FRIEND_ID id FROM friends WHERE USER_ID = ? UNION " +
-                "SELECT USER_ID UserId FROM friends WHERE FRIEND_ID = ?) AS FirstUserFriends " +
-                "JOIN (SELECT FRIEND_ID id FROM friends WHERE USER_ID = ? UNION" +
-                " SELECT USER_ID UserId FROM friends WHERE FRIEND_ID = ?) AS" +
-                " SecondUserFriends ON FirstUserFriends.id = SecondUserFriends.id";
-        return jdbcTemplate.queryForList(sqlQuery, Long.class, friendship.getUserId(), friendship.getUserId(),
-                friendship.getFriendId(), friendship.getFriendId());
+    public List<User> getCommonFriends(Friendship friendship) {
+        String sqlQuery = "select * from USERS u, FRIENDS f, FRIENDS o where u.USER_ID = f.FRIEND_ID AND" +
+                " u.USER_ID = o.FRIEND_ID AND f.USER_ID = ? AND o.USER_ID = ?";
+        return jdbcTemplate.query(sqlQuery, UserDbStorage::mapRowToUser,
+                friendship.getFriendId(), friendship.getUserId());
     }
 }

@@ -40,8 +40,8 @@ class FriendsDbStorageTest {
         userStorage.save(user);
         userStorage.save(user1);
         friendsStorage.addFriends(new Friendship(1L, 2L));
-        List<Long> userFriendList = friendsStorage.getFriendList(1L);
-        assertEquals(user1.getId(), userFriendList.get(0), "Добавление в друзья проходит некорректно");
+        List<User> userFriendList = friendsStorage.getFriendList(1L);
+        assertEquals(user1.getId(), userFriendList.get(0).getId(), "Добавление в друзья проходит некорректно");
     }
 
     @Test
@@ -52,7 +52,7 @@ class FriendsDbStorageTest {
         userStorage.save(user1);
         Friendship friendship = new Friendship(1L, 2L);
         friendsStorage.addFriends(friendship);
-        List<Long> userFriendList = friendsStorage.getFriendList(1L);
+        List<User> userFriendList = friendsStorage.getFriendList(1L);
         assertEquals(userFriendList.size(), 1, "Возвращается некорректный список друзей для пользователя");
     }
 
@@ -83,7 +83,7 @@ class FriendsDbStorageTest {
         friendsStorage.addFriends(friendship);
         friendsStorage.addFriends(friendship1);
         friendsStorage.addFriends(friendship2);
-        assertEquals(2L, friendsStorage.getCommonFriends(friendship1).get(0), "Возвращение" +
+        assertEquals(3L, friendsStorage.getCommonFriends(friendship).get(0).getId(), "Возвращение" +
                 " списка общих друзей проходит некорректно");
     }
 }

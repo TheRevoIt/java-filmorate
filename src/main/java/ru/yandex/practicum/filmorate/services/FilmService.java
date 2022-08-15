@@ -5,7 +5,6 @@ import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Like;
-import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.GenreStorage;
 import ru.yandex.practicum.filmorate.storage.LikesStorage;
@@ -15,7 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 public class FilmService {
@@ -73,25 +71,27 @@ public class FilmService {
     }
 
     public void likeFilm(Long id, Long userId) {
-        User userLoaded = userStorage.get(userId).orElseThrow(() -> new NotFoundException(String.format("Пользователь" +
-                " с id=%x не найден", userId)));
-        Film filmLoaded = getFilm(id);
+        checkIfUserExists(userId);
+        getFilm(id);
         likesStorage.likeFilm(new Like(userId, id));
     }
 
     public void deleteLike(Long id, Long userId) {
-        User userLoaded = userStorage.get(userId).orElseThrow(() -> new NotFoundException(String.format("Пользователь" +
-                " с id=%x не найден", userId)));
-        Film filmLoaded = getFilm(id);
+        checkIfUserExists(userId);
+        getFilm(id);
         likesStorage.deleteLike(new Like(userId, id));
     }
 
     public List<Film> getFilmsSortedByLikes(Integer size) {
-        return likesStorage.getFilmsSortedByLikes(size).stream().map(this::getFilm)
-                .collect(Collectors.toList());
+        return likesStorage.getFilmsSortedByLikes(size);
     }
 
     public void clearMapForTests() {
         filmStorage.clear();
+    }
+
+    private void checkIfUserExists(Long userId) {
+        userStorage.get(userId).orElseThrow(() -> new NotFoundException(String.format("Пользователь" +
+                " с id=%x не найден", userId)));
     }
 }

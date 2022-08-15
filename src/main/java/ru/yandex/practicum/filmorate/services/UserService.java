@@ -9,7 +9,6 @@ import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -49,32 +48,26 @@ public class UserService {
     }
 
     public void addFriends(Long userId, Long friendId) {
-        User userLoaded = getUser(userId);
-        User friendLoaded = getUser(friendId);
+        getUser(userId);
+        getUser(friendId);
         friendsStorage.addFriends(new Friendship(userId, friendId));
     }
 
     public void deleteFriend(Long userId, Long friendId) {
-        User userLoaded = getUser(userId);
-        User friendLoaded = getUser(friendId);
+        getUser(userId);
+        getUser(friendId);
         friendsStorage.deleteFriend(new Friendship(userId, friendId));
     }
 
     public List<User> getFriendList(Long userId) {
-        User userLoaded = getUser(userId);
-        return friendsStorage.getFriendList(userId)
-                .stream()
-                .map(this::getUser)
-                .collect(Collectors.toList());
+        getUser(userId);
+        return friendsStorage.getFriendList(userId);
     }
 
     public List<User> getCommonFriends(Long userId, Long friendId) {
-        User userLoaded = getUser(userId);
-        User friendLoaded = getUser(friendId);
-        return friendsStorage.getCommonFriends(new Friendship(userId, friendId))
-                .stream()
-                .map(this::getUser)
-                .collect(Collectors.toList());
+        getUser(userId);
+        getUser(friendId);
+        return friendsStorage.getCommonFriends(new Friendship(userId, friendId));
     }
 
     public void clearMapForTests() {

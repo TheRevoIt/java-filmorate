@@ -26,17 +26,23 @@ public class UserDbStorage implements UserStorage {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    static User mapRowToUser(ResultSet resultSet, int rowNum) throws SQLException {
+        User userMapped = new User(resultSet.getString("email"), resultSet.getString("login"), resultSet.getString("user_name"), resultSet.getDate("birthday").toLocalDate());
+        userMapped.setId(resultSet.getLong("user_id"));
+        return userMapped;
+    }
+
     @Override
     public List<User> getAllEntries() {
         String sqlQuery = "SELECT USER_ID, EMAIL, LOGIN, USER_NAME, BIRTHDAY FROM USERS";
-        return jdbcTemplate.query(sqlQuery, this::mapRowToUser);
+        return jdbcTemplate.query(sqlQuery, UserDbStorage::mapRowToUser);
     }
 
     @Override
     public Optional<User> get(Long id) {
         String sqlQuery = "SELECT USER_ID, EMAIL, LOGIN, USER_NAME, BIRTHDAY FROM USERS WHERE USER_ID = ?";
         try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(sqlQuery, this::mapRowToUser, id));
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sqlQuery, UserDbStorage::mapRowToUser, id));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
@@ -94,11 +100,5 @@ public class UserDbStorage implements UserStorage {
                 "ALTER COLUMN USER_ID RESTART WITH 1 ";
         jdbcTemplate.update(sqlQuery);
         jdbcTemplate.update(sqlQueryId);
-    }
-
-    private User mapRowToUser(ResultSet resultSet, int rowNum) throws SQLException {
-        User userMapped = new User(resultSet.getString("email"), resultSet.getString("login"), resultSet.getString("user_name"), resultSet.getDate("birthday").toLocalDate());
-        userMapped.setId(resultSet.getLong("user_id"));
-        return userMapped;
     }
 }

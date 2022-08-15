@@ -7,7 +7,7 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import ru.yandex.practicum.filmorate.validators.DateIsAfter;
 
-import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
@@ -18,7 +18,7 @@ import java.util.Set;
 @Data
 @JsonPropertyOrder({"name", "description", "releaseDate", "duration", "id", "mpa"})
 public class Film implements Model {
-    @NotEmpty
+    @NotBlank
     private final String name;
     @NotNull
     @Size(max = 200)
