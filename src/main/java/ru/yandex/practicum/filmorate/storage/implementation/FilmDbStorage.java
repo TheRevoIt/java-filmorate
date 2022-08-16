@@ -40,14 +40,13 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public List<Film> getAllEntries() {
-        String sqlQuery = "SELECT * FROM FILMS JOIN MPA on FILMS.MPA_ID = MPA.MPA_ID";
+        String sqlQuery = "SELECT * FROM FILMS, MPA WHERE FILMS.MPA_ID = MPA.MPA_ID";
         return jdbcTemplate.query(sqlQuery, FilmDbStorage::mapRowToFilm);
     }
 
     @Override
     public Optional<Film> get(Long id) {
-        String sqlQuery = "SELECT FILM_ID, TITLE, DESCRIPTION, RELEASE_DATE, DURATION, MPA.MPA_ID, NAME FROM FILMS JOIN MPA" +
-                " on FILMS.MPA_ID = MPA.MPA_ID WHERE FILM_ID = ?";
+        String sqlQuery = "SELECT * FROM FILMS f, MPA m WHERE f.MPA_ID = m.MPA_ID AND FILM_ID = ?";
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(sqlQuery, FilmDbStorage::mapRowToFilm, id));
         } catch (EmptyResultDataAccessException e) {
