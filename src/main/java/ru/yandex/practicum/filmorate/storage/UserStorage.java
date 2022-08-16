@@ -10,9 +10,11 @@ public interface UserStorage {
 
     Optional<User> get(Long id);
 
-    void save(User user);
+    User save(User user);
 
     User update(User user);
+
+    void delete(Long id);
 
     void clear();
 }

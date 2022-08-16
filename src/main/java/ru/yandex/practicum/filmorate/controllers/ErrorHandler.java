@@ -10,6 +10,7 @@ import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.UnknownItemUpdateException;
 
 import javax.validation.ConstraintViolationException;
+import java.sql.SQLIntegrityConstraintViolationException;
 
 @RestControllerAdvice
 @Slf4j
@@ -22,6 +23,12 @@ public class ErrorHandler {
 
     @ExceptionHandler
     public ResponseEntity<String> handleUnknownItemException(final UnknownItemUpdateException e) {
+        log.info("500 {}", e.getMessage());
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<String> handleSqlConstraintViolation(final SQLIntegrityConstraintViolationException e) {
         log.info("500 {}", e.getMessage());
         return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
